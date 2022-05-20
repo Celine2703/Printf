@@ -10,11 +10,9 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-#include <stdlib.h>
-#include <stdio.h>
-#include <stdarg.h>
+#include "ft_printf.h"
 
-truc	ft_flag(int i, const char *str, va_list arg)
+int	ft_flag(int i, const char *str, va_list args)
 {
 	if (str[i] == 'c')
 		return (ft_print_c(args));
@@ -22,41 +20,41 @@ truc	ft_flag(int i, const char *str, va_list arg)
 		return (ft_print_s(args));
 	else if (str[i] == 'p')
 		return (ft_print_p(args));
-	else if (str[i] == 'd')
-		return (ft_print_d(args));
-	else if (str[i] == 'i')
-		return (ft_print_i(args));
+	else if (str[i] == 'd' || str[i] == 'i')
+		return (ft_print_di(args));
 	else if (str[i] == 'u')
 		return (ft_print_u(args));
 	else if (str[i] == 'x')
 		return (ft_print_x(args));
 	else if (str[i] == 'X')
-		return (ft_print_X(args));
+		return (ft_print_xx(args));
 	else if (str[i] == '%')
-		return (ft_print_%(args));
+	{
+		write(1, "%", 1);
+		return (1);
+	}
+	return (0);
 }
 
 int	ft_printf(const char *str, ...)
 {
-	va_list args;
+	va_list	args;
 	int		i;
+	int		cpt;
 
 	if (!str)
 		return (0);
 	va_start(args, str);
-	//va_end(args);
 	i = 0;
-	while (str[i] != '%')
+	cpt = 0;
+	while (str[i])
+	{
+		if (str[i] != '%')
+			ft_putchar_fd(str[i], 1);
+		else
+			cpt += ft_flag(++i, str, args) - 1;
 		i++;
-	i++;
-	return (ft_flag(i, str, args));
-}
-
-int main()
-{
-	int c;
-	
-	c = 0;
-	c = ft_printf("q",3, 68);
-	printf("%i", c);
+		cpt++;
+	}
+	return (cpt);
 }
